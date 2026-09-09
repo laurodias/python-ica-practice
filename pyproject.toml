@@ -1,0 +1,11 @@
+[project]
+name = "python-ica-practice"
+version = "0.1.0"
+description = "Python coding assessment practice"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q"
