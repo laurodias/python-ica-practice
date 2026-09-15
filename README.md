@@ -11,6 +11,19 @@ Build speed, correctness, edge-case awareness, and clean Python implementation u
 - `exercises/` — problems to solve
 - `tests/` — automated tests
 - `solutions/` — reference solutions (added later; do not look here during timed practice)
+- `run_ica.py` — local ICA-style test runner
+
+## Local validation
+
+The test runner loads the `solution.py` from your local working tree, so you can test code before committing it.
+
+```bash
+python run_ica.py 10
+python run_ica.py 10 11 12
+python run_ica.py --all
+```
+
+Exercise 07 is intentionally excluded because it is currently parked.
 
 ## Practice rules
 
