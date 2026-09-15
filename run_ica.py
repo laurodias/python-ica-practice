@@ -202,9 +202,93 @@ class Test11(ExerciseTest):
         self.assertEqual(fn(requests, 500, 600), {})
 
 
+class Test12(ExerciseTest):
+    exercise = 12
+
+    def test_deployment_counts(self):
+        fn = self.solution.summarize_deployments
+        deployments = [
+            {"service": "api", "environment": "prod", "success": True},
+            {"service": "web", "environment": "prod", "success": False},
+            {"service": "api", "environment": "prod", "success": True},
+            {"service": "worker", "environment": "staging", "success": True},
+            {"service": "web", "environment": "staging", "success": False},
+        ]
+        original = copy.deepcopy(deployments)
+        self.assertEqual(fn(deployments), {
+            "prod": {"success": 2, "failed": 1},
+            "staging": {"success": 1, "failed": 1},
+        })
+        self.assertEqual(deployments, original)
+        self.assertEqual(fn([]), {})
+
+
+class Test13(ExerciseTest):
+    exercise = 13
+
+    def test_average_threshold(self):
+        fn = self.solution.find_alerting_services
+        metrics = [
+            {"service": "api", "error_rate": 0.10},
+            {"service": "web", "error_rate": 0.30},
+            {"service": "api", "error_rate": 0.20},
+            {"service": "worker", "error_rate": 0.50},
+            {"service": "web", "error_rate": 0.10},
+        ]
+        original = copy.deepcopy(metrics)
+        self.assertEqual(fn(metrics, 0.25), ["worker"])
+        self.assertEqual(fn(metrics, 0.15), ["web", "worker"])
+        self.assertEqual(fn(metrics, 0.50), [])
+        self.assertEqual(metrics, original)
+        self.assertEqual(fn([], 0.10), [])
+
+
+class Test14(ExerciseTest):
+    exercise = 14
+
+    def test_changed_settings(self):
+        fn = self.solution.changed_settings
+        old = {"region": "eu-west-1", "replicas": "3", "debug": "false"}
+        new = {"region": "eu-west-1", "replicas": "5", "timeout": "30"}
+        old_original = old.copy()
+        new_original = new.copy()
+        self.assertEqual(fn(old, new), ["debug", "replicas", "timeout"])
+        self.assertEqual(old, old_original)
+        self.assertEqual(new, new_original)
+        self.assertEqual(fn({}, {}), [])
+        self.assertEqual(fn({"a": "1"}, {}), ["a"])
+        self.assertEqual(fn({}, {"b": "2"}), ["b"])
+
+
+class Test15(ExerciseTest):
+    exercise = 15
+
+    def test_top_error_services(self):
+        fn = self.solution.top_error_services
+        logs = [
+            {"service": "api", "status": 500},
+            {"service": "web", "status": 503},
+            {"service": "api", "status": 502},
+            {"service": "worker", "status": 500},
+            {"service": "web", "status": 500},
+        ]
+        original = copy.deepcopy(logs)
+        self.assertEqual(fn(logs, 2), ["api", "web"])
+        self.assertEqual(fn(logs, 10), ["api", "web", "worker"])
+        self.assertEqual(fn(logs, 0), [])
+        self.assertEqual(fn([
+            {"service": "api", "status": 500},
+            {"service": "web", "status": 500},
+            {"service": "api", "status": 200},
+            {"service": "worker", "status": 500},
+        ], 2), ["api", "web"])
+        self.assertEqual(logs, original)
+
+
 TEST_CLASSES = {
     1: Test01, 2: Test02, 3: Test03, 4: Test04, 5: Test05,
     6: Test06, 8: Test08, 9: Test09, 10: Test10, 11: Test11,
+    12: Test12, 13: Test13, 14: Test14, 15: Test15,
 }
 
 
